@@ -71,7 +71,7 @@
         <div><small>언제 와</small><strong id="arrival"></strong></div>
       </div>
       <details open>
-        <summary>화면에 나온 제품 사양·주문 정보 모조리</summary>
+        <summary>하드웨어 사양</summary>
         <ul id="details"></ul>
       </details>
     </article>
@@ -108,6 +108,8 @@
 
     function render(order) {
       if (!order) return;
+      const hardware = order.lines.findIndex(line => /^하드웨어\s*:?\s*$/.test(line));
+      const specifications = hardware >= 0 ? order.lines.slice(hardware + 1) : order.lines;
       $("empty").hidden = true;
       $("order").hidden = false;
       $("number").textContent = `주문 ${order.number}`;
@@ -117,7 +119,7 @@
       $("progress").textContent = `${order.progress}%`;
       $("bar").style.width = `${order.progress}%`;
       $("bar").parentElement.setAttribute("aria-valuenow", order.progress);
-      $("details").replaceChildren(...order.lines.map(line => Object.assign(document.createElement("li"), {textContent: line})));
+      $("details").replaceChildren(...specifications.map(line => Object.assign(document.createElement("li"), {textContent: line})));
     }
 
     try {

@@ -70,7 +70,7 @@
             <div><small>언제 와</small><strong>{{ order.estimated_arrival }}</strong></div>
           </div>
           <details open>
-            <summary>화면에 나온 제품 사양·주문 정보 모조리</summary>
+            <summary>하드웨어 사양</summary>
             <ul>{% for line in order.details %}<li>{{ line }}</li>{% endfor %}</ul>
           </details>
           {% if order.fields %}

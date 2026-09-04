@@ -101,13 +101,16 @@ def parse_apple_page(payload):
     arrival = _first_matching(
         lines, ("도착", "배송 예정", "수령 예정", "배송일"), "Apple 주문 페이지에서 확인"
     )
+    hardware_index = next(
+        (index for index, line in enumerate(lines) if line.rstrip(":") == "하드웨어"), None
+    )
     return {
         "order_number": order_match.group(0) if order_match else "화면에서 확인",
         "product_name": product_name,
         "status": status,
         "estimated_arrival": arrival,
         "progress": progress,
-        "details": lines,
+        "details": lines[hardware_index + 1:] if hardware_index is not None else lines,
         "fields": fields,
         "source_url": source,
     }
