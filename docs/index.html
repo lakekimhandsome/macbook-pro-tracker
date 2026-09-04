@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>맥북 언제 와</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff8a6; color: #111; font: 16px/1.5 monospace; }
+    main { width: min(920px, calc(100% - 24px)); margin: 24px auto 60px; }
+    h1 { margin: 0 0 8px; font-size: clamp(38px, 8vw, 74px); line-height: 1; letter-spacing: -5px; }
+    h2 { overflow-wrap: anywhere; }
+    .box { margin: 22px 0; padding: 20px; background: #fff; border: 4px solid #111; box-shadow: 8px 8px 0 #111; }
+    .steps { display: grid; gap: 14px; padding-left: 24px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+    .button { display: inline-block; padding: 11px 14px; color: #fff; background: #111; border: 3px solid #111; font-weight: bold; text-decoration: none; cursor: grab; }
+    .button:hover { color: #111; background: #34c759; }
+    .button.secondary { color: #111; background: #5ac8fa; cursor: pointer; }
+    .warning, small { color: #555; font-size: 13px; }
+    .headline { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
+    .badge { padding: 6px 10px; background: #34c759; border: 3px solid #111; font-weight: bold; white-space: nowrap; }
+    .meter { height: 32px; margin: 18px 0 8px; background: #ddd; border: 3px solid #111; }
+    .meter > div { height: 100%; background: repeating-linear-gradient(45deg, #0071e3 0 12px, #5ac8fa 12px 24px); }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .summary div { padding: 12px; background: #eee; border: 2px solid #111; }
+    small { display: block; margin-bottom: 6px; }
+    details { margin-top: 18px; }
+    summary { cursor: pointer; font-weight: bold; font-size: 18px; }
+    li { margin: 7px 0; overflow-wrap: anywhere; }
+    .error { background: #ff6961; }
+    [hidden] { display: none !important; }
+    @media (max-width: 700px) {
+      .summary { grid-template-columns: 1fr; }
+      .headline { display: block; }
+      .badge { display: inline-block; margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>맥북 언제 와???</h1>
+    <p>Apple 주문 화면을 내 브라우저에만 저장하는 배송 추적기 📦</p>
+
+    <section class="box">
+      <h2>처음 한 번만 준비</h2>
+      <ol class="steps">
+        <li><strong>🍎 주문 결과 가져오기</strong>를 북마크바로 드래그합니다.</li>
+        <li><strong>Apple 주문 조회 열기</strong>에서 주문 조회를 완료합니다.</li>
+        <li>결과 화면에서 북마크바의 <strong>🍎 주문 결과 가져오기</strong>를 누릅니다.</li>
+      </ol>
+      <div class="actions">
+        <a id="bookmarklet" class="button" href="#">🍎 주문 결과 가져오기</a>
+        <a class="button secondary" href="https://secure.store.apple.com/kr/shop/order/list" target="_blank" rel="noopener noreferrer">Apple 주문 조회 열기 ↗</a>
+      </div>
+      <p class="warning">주문 정보는 GitHub나 Cloudflare로 전송되지 않고 이 브라우저에만 저장됩니다.</p>
+    </section>
+
+    <section id="error" class="box error" hidden></section>
+    <section id="empty" class="box"><strong>아직 가져온 주문이 없습니다.</strong></section>
+
+    <article id="order" class="box" hidden>
+      <div class="headline">
+        <div><small id="number"></small><h2 id="product"></h2></div>
+        <span id="status" class="badge"></span>
+      </div>
+      <div class="meter" role="progressbar" aria-label="배송 진행률" aria-valuemin="0" aria-valuemax="100"><div id="bar"></div></div>
+      <div class="summary">
+        <div><small>진행률(대충)</small><strong id="progress"></strong></div>
+        <div><small>현재 상태</small><strong id="state"></strong></div>
+        <div><small>언제 와</small><strong id="arrival"></strong></div>
+      </div>
+      <details open>
+        <summary>화면에 나온 제품 사양·주문 정보 모조리</summary>
+        <ul id="details"></ul>
+      </details>
+    </article>
+  </main>
+
+  <script>
+    const target = "https://apple.lakekim.com/";
+    const bookmarklet = `javascript:(()=>{const s=()=>{const d={source:location.href,text:document.body.innerText};location.href='${target}#'+encodeURIComponent(JSON.stringify(d))},e=[...document.querySelectorAll('button,a')].find(x=>/구성 상세 정보 표시|Show configuration details/i.test(x.innerText));if(e){e.click();setTimeout(s,800)}else{s()}})()`;
+    const labels = [["배송 완료",100],["픽업 준비 완료",100],["배송 중",85],["출고됨",75],["출고 준비 중",55],["주문 처리 중",30],["처리 중",30],["주문 접수",10]];
+    const $ = id => document.getElementById(id);
+
+    $("bookmarklet").href = bookmarklet;
+    $("bookmarklet").onclick = event => {
+      event.preventDefault();
+      alert("클릭 말고 북마크바로 드래그하세요!");
+    };
+
+    function parse(payload) {
+      const host = new URL(payload.source).hostname.toLowerCase();
+      if (host !== "apple.com" && !host.endsWith(".apple.com")) throw new Error("Apple 주문 페이지에서 실행한 결과만 가져올 수 있습니다.");
+      if (!payload.text || !/주문|배송|픽업|Order/.test(payload.text)) throw new Error("주문 결과를 찾지 못했습니다.");
+      const ignored = new Set(["Apple","스토어","Mac","iPad","iPhone","Watch","Vision","AirPods","TV 및 홈","엔터테인먼트","액세서리","고객지원"]);
+      const lines = [...new Set(payload.text.split(/\n+/).map(line => line.replace(/\s+/g," ").trim()).filter(line => line && !ignored.has(line)))];
+      const find = words => lines.find(line => words.some(word => line.includes(word)));
+      const status = find(labels.map(([label]) => label)) || "상태 확인됨";
+      const progress = labels.find(([label]) => status.includes(label))?.[1] || 50;
+      return {
+        number: payload.text.toUpperCase().match(/\b(?:W\d{9,11}|WR\d+|J\d+|\d{10}|[A-Z]{3}\d{7}|EF[A-Z0-9]{10})\b/)?.[0] || "화면에서 확인",
+        product: find(["MacBook","iPhone","iPad","Apple Watch","AirPods","Mac mini","Mac Studio"]) || "Apple 주문 제품",
+        arrival: find(["도착","배송 예정","수령 예정","배송일"]) || "Apple 주문 페이지에서 확인",
+        status, progress, lines
+      };
+    }
+
+    function render(order) {
+      if (!order) return;
+      $("empty").hidden = true;
+      $("order").hidden = false;
+      $("number").textContent = `주문 ${order.number}`;
+      $("product").textContent = order.product;
+      $("status").textContent = $("state").textContent = order.status;
+      $("arrival").textContent = order.arrival;
+      $("progress").textContent = `${order.progress}%`;
+      $("bar").style.width = `${order.progress}%`;
+      $("bar").parentElement.setAttribute("aria-valuenow", order.progress);
+      $("details").replaceChildren(...order.lines.map(line => Object.assign(document.createElement("li"), {textContent: line})));
+    }
+
+    try {
+      let order;
+      if (location.hash.length > 1) {
+        order = parse(JSON.parse(decodeURIComponent(location.hash.slice(1))));
+        localStorage.setItem("apple-order", JSON.stringify(order));
+        history.replaceState(null, "", location.pathname);
+      } else {
+        order = JSON.parse(localStorage.getItem("apple-order"));
+      }
+      render(order);
+    } catch (error) {
+      $("error").hidden = false;
+      $("error").textContent = `가져오기 실패: ${error.message}`;
+      history.replaceState(null, "", location.pathname);
+    }
+  </script>
+</body>
+</html>

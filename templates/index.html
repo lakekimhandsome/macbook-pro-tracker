@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>맥북 언제 와</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff8a6; color: #111; font: 16px/1.5 monospace; }
+    main { width: min(920px, calc(100% - 24px)); margin: 24px auto 60px; }
+    h1 { margin: 0 0 8px; font-size: clamp(38px, 8vw, 74px); line-height: 1; letter-spacing: -5px; }
+    h2 { overflow-wrap: anywhere; }
+    .box { margin: 22px 0; padding: 20px; background: white; border: 4px solid #111; box-shadow: 8px 8px 0 #111; }
+    .steps { display: grid; gap: 14px; padding-left: 24px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+    .button { display: inline-block; padding: 11px 14px; color: white; background: #111; border: 3px solid #111; font-weight: bold; text-decoration: none; cursor: grab; }
+    .button:hover { color: #111; background: #34c759; }
+    .button.secondary { color: #111; background: #5ac8fa; cursor: pointer; }
+    .warning { color: #555; font-size: 13px; }
+    .headline { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
+    .badge { padding: 6px 10px; background: #34c759; border: 3px solid #111; font-weight: bold; white-space: nowrap; }
+    .meter { height: 32px; margin: 18px 0 8px; background: #ddd; border: 3px solid #111; }
+    .meter > div { width: {{ order.progress if order else 0 }}%; height: 100%; background: repeating-linear-gradient(45deg, #0071e3 0 12px, #5ac8fa 12px 24px); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .summary-grid div { padding: 12px; background: #eee; border: 2px solid #111; }
+    small { display: block; margin-bottom: 6px; color: #555; }
+    details { margin-top: 18px; }
+    summary { cursor: pointer; font-weight: bold; font-size: 18px; }
+    li { margin: 7px 0; overflow-wrap: anywhere; }
+    table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 7px; border: 1px solid #777; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+    th { width: 38%; background: #eee; }
+    #import-status { font-size: 20px; font-weight: bold; }
+    @media (max-width: 700px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      .headline { display: block; }
+      .badge { display: inline-block; margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+      <h1>맥북 언제 와???</h1>
+      <p>자동 로그인 대신 진짜 브라우저 화면을 뜯어오는 방식 📦</p>
+
+      <section class="box">
+        <h2>처음 한 번만 준비</h2>
+        <ol class="steps">
+          <li>기존 북마크를 지우고 아래 <strong>🍎 주문 결과 가져오기 v2</strong> 버튼을 북마크바로 드래그합니다.</li>
+          <li><strong>Apple 주문 조회 열기</strong>를 눌러 공식 페이지에서 주문 조회를 완료합니다.</li>
+          <li>주문 결과가 보이면 북마크바의 <strong>🍎 주문 결과 가져오기</strong>를 누릅니다.</li>
+        </ol>
+        <div class="actions">
+          <a class="button" href="{{ bookmarklet }}" onclick="alert('클릭 말고 북마크바로 드래그하세요!'); return false;">🍎 주문 결과 가져오기 v2</a>
+          <a class="button secondary" href="{{ apple_order_url }}" target="_blank" rel="noopener noreferrer">Apple 주문 조회 열기 ↗</a>
+        </div>
+        <p class="warning">Apple 비밀번호와 쿠키는 가져오지 않습니다. 현재 결과는 메모리에만 남아 서버를 끄면 사라집니다.</p>
+      </section>
+
+      {% if order %}
+        <article class="box">
+          <div class="headline">
+            <div><small>주문 {{ order.order_number }}</small><h2>{{ order.product_name }}</h2></div>
+            <span class="badge">{{ order.status }}</span>
+          </div>
+          <div class="meter" role="progressbar" aria-label="배송 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ order.progress }}"><div></div></div>
+          <div class="summary-grid">
+            <div><small>진행률(대충)</small><strong>{{ order.progress }}%</strong></div>
+            <div><small>현재 상태</small><strong>{{ order.status }}</strong></div>
+            <div><small>언제 와</small><strong>{{ order.estimated_arrival }}</strong></div>
+          </div>
+          <details open>
+            <summary>화면에 나온 제품 사양·주문 정보 모조리</summary>
+            <ul>{% for line in order.details %}<li>{{ line }}</li>{% endfor %}</ul>
+          </details>
+          {% if order.fields %}
+            <details>
+              <summary>Apple 원본 데이터까지 탈탈 털기</summary>
+              <table><tbody>{% for key, value in order.fields %}<tr><th>{{ key }}</th><td>{{ value }}</td></tr>{% endfor %}</tbody></table>
+            </details>
+          {% endif %}
+        </article>
+      {% else %}
+        <section class="box"><strong>아직 가져온 주문이 없습니다.</strong></section>
+      {% endif %}
+  </main>
+</body>
+</html>
