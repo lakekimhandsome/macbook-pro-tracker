@@ -40,7 +40,7 @@
 <body>
   <main>
     <h1>맥북 언제 와???</h1>
-    <p>Apple 주문 화면을 내 브라우저에만 저장하는 배송 추적기 📦</p>
+    <p>누구나 확인할 수 있는 내 MacBook 배송 현황 📦</p>
 
     <section class="box">
       <h2>처음 한 번만 준비</h2>
@@ -53,7 +53,7 @@
         <a id="bookmarklet" class="button" href="#"> 주문 결과 가져오기</a>
         <a class="button secondary" href="https://secure.store.apple.com/kr/shop/order/list" target="_blank" rel="noopener noreferrer">Apple 주문 조회 열기 ↗</a>
       </div>
-      <p class="warning">주문 정보는 GitHub나 Cloudflare로 전송되지 않고 이 브라우저에만 저장됩니다.</p>
+      <p class="warning">공개 화면에는 주문번호·수령인·청구 정보를 저장하지 않습니다.</p>
     </section>
 
     <section id="error" class="box error" hidden></section>
@@ -81,6 +81,25 @@
     const target = "http://apple.lakekim.com/";
     const bookmarklet = `javascript:(()=>{const s=()=>{const d={source:location.href,text:document.body.innerText};location.href='${target}#'+encodeURIComponent(JSON.stringify(d))},e=[...document.querySelectorAll('button,a')].find(x=>/구성 상세 정보 표시|Show configuration details/i.test(x.innerText));if(e){e.click();setTimeout(s,800)}else{s()}})()`;
     const labels = [["배송 완료",100],["픽업 준비 완료",100],["배송 중",85],["출고됨",75],["출고 준비 중",55],["주문 처리 중",30],["처리 중",30],["주문 접수",10]];
+    const publicOrder = {
+      product: "14형 MacBook Pro(M5 탑재)",
+      status: "처리 중",
+      arrival: "도착 2026/09/18 - 2026/09/29",
+      progress: 30,
+      lines: [
+        "Force Touch Trackpad",
+        "Three Thunderbolt 4 ports, HDMI port, SDXC card slot, headphone jack, MagSafe 3",
+        "14-inch Liquid Retina XDR display",
+        "액세서리 키트",
+        "Nano-texture display",
+        "1TB SSD storage",
+        "Backlit Magic Keyboard with Touch ID - Korean - KOR",
+        "70W USB-C Power Adapter",
+        "24GB unified memory",
+        "Touch ID",
+        "Apple M5 chip with 10-core CPU, 10-core GPU, and 16-core Neural Engine"
+      ]
+    };
     const $ = id => document.getElementById(id);
 
     $("bookmarklet").href = bookmarklet;
@@ -112,7 +131,7 @@
       const specifications = hardware >= 0 ? order.lines.slice(hardware + 1) : order.lines;
       $("empty").hidden = true;
       $("order").hidden = false;
-      $("number").textContent = `주문 ${order.number}`;
+      $("number").textContent = order.number ? `주문 ${order.number}` : "공개 배송 현황";
       $("product").textContent = order.product;
       $("status").textContent = $("state").textContent = order.status;
       $("arrival").textContent = order.arrival;
@@ -129,7 +148,7 @@
         localStorage.setItem("apple-order", JSON.stringify(order));
         history.replaceState(null, "", location.pathname);
       } else {
-        order = JSON.parse(localStorage.getItem("apple-order"));
+        order = publicOrder;
       }
       render(order);
     } catch (error) {
