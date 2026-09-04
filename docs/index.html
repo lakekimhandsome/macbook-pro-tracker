@@ -78,7 +78,7 @@
   </main>
 
   <script>
-    const target = "https://apple.lakekim.com/";
+    const target = "http://apple.lakekim.com/";
     const bookmarklet = `javascript:(()=>{const s=()=>{const d={source:location.href,text:document.body.innerText};location.href='${target}#'+encodeURIComponent(JSON.stringify(d))},e=[...document.querySelectorAll('button,a')].find(x=>/구성 상세 정보 표시|Show configuration details/i.test(x.innerText));if(e){e.click();setTimeout(s,800)}else{s()}})()`;
     const labels = [["배송 완료",100],["픽업 준비 완료",100],["배송 중",85],["출고됨",75],["출고 준비 중",55],["주문 처리 중",30],["처리 중",30],["주문 접수",10]];
     const $ = id => document.getElementById(id);
