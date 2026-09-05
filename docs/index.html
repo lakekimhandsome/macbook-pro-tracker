@@ -3,159 +3,99 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="referrer" content="no-referrer">
-  <title>맥북 언제 와</title>
+  <meta name="description" content="곧 도착할 14형 MacBook Pro M5 자랑 페이지">
+  <title>아직 안 왔는데 벌써 자랑 중</title>
   <style>
+    :root { color-scheme: dark; --black: #050505; --panel: #111113; --line: #29292d; --muted: #98989f; --silver: #e8e8ed; --green: #30d158; }
     * { box-sizing: border-box; }
-    body { margin: 0; background: #fff8a6; color: #111; font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    main { width: min(920px, calc(100% - 24px)); margin: 24px auto 60px; }
-    h1 { margin: 0 0 8px; font-size: clamp(38px, 8vw, 74px); line-height: 1; letter-spacing: -5px; }
-    h2 { overflow-wrap: anywhere; }
-    .box { margin: 22px 0; padding: 20px; background: #fff; border: 4px solid #111; box-shadow: 8px 8px 0 #111; }
-    .steps { display: grid; gap: 14px; padding-left: 24px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
-    .button { display: inline-block; padding: 11px 14px; color: #fff; background: #111; border: 3px solid #111; font-weight: bold; text-decoration: none; cursor: grab; }
-    .button:hover { color: #111; background: #34c759; }
-    .button.secondary { color: #111; background: #5ac8fa; cursor: pointer; }
-    .warning, small { color: #555; font-size: 13px; }
-    .headline { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
-    .badge { padding: 6px 10px; background: #34c759; border: 3px solid #111; font-weight: bold; white-space: nowrap; }
-    .meter { height: 32px; margin: 18px 0 8px; background: #ddd; border: 3px solid #111; }
-    .meter > div { height: 100%; background: repeating-linear-gradient(45deg, #0071e3 0 12px, #5ac8fa 12px 24px); }
-    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .summary div { padding: 12px; background: #eee; border: 2px solid #111; }
-    small { display: block; margin-bottom: 6px; }
-    details { margin-top: 18px; }
-    summary { cursor: pointer; font-weight: bold; font-size: 18px; }
-    li { margin: 7px 0; overflow-wrap: anywhere; }
-    .error { background: #ff6961; }
-    [hidden] { display: none !important; }
-    @media (max-width: 700px) {
-      .summary { grid-template-columns: 1fr; }
-      .headline { display: block; }
-      .badge { display: inline-block; margin-top: 12px; }
+    body { margin: 0; background: radial-gradient(circle at 70% 15%, rgba(110,110,120,.2), transparent 28rem), var(--black); color: var(--silver); font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main, footer { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; }
+    .logo { font-size: 28px; line-height: 1; }
+    .nav-note { color: var(--muted); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    .hero { min-height: 78vh; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding: 70px 0 90px; }
+    .eyebrow { margin: 0 0 20px; color: var(--green); font-size: 13px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(54px, 8vw, 112px); line-height: .92; letter-spacing: -.075em; }
+    h1 span { color: #77777d; }
+    .intro { max-width: 590px; margin: 30px 0 0; color: #c7c7cc; font-size: clamp(19px, 2vw, 27px); letter-spacing: -.025em; }
+    .product-shot { position: relative; min-width: 0; }
+    .product-shot::before { content: ""; position: absolute; inset: 12% 5%; border-radius: 50%; background: rgba(255,255,255,.13); filter: blur(60px); }
+    .product-shot img { position: relative; display: block; width: 100%; max-height: 560px; object-fit: contain; filter: drop-shadow(0 32px 35px rgba(0,0,0,.7)); }
+    .finish { position: absolute; right: 0; bottom: 4%; padding: 8px 12px; background: rgba(0,0,0,.72); border: 1px solid var(--line); border-radius: 999px; backdrop-filter: blur(14px); font-size: 13px; }
+    .status { padding: 28px; border: 1px solid var(--line); border-radius: 24px; background: rgba(17,17,19,.84); }
+    .status-head { display: flex; justify-content: space-between; gap: 20px; align-items: end; }
+    .status h2 { margin: 0; font-size: clamp(23px, 3vw, 38px); letter-spacing: -.04em; }
+    .status strong { color: var(--green); white-space: nowrap; }
+    .track { height: 7px; margin: 25px 0 14px; overflow: hidden; border-radius: 10px; background: #303034; }
+    .track span { display: block; width: 30%; height: 100%; border-radius: inherit; background: var(--green); box-shadow: 0 0 20px rgba(48,209,88,.55); }
+    .stages { display: flex; justify-content: space-between; color: #6e6e73; font-size: 12px; }
+    .stages .active { color: var(--silver); font-weight: 700; }
+    .specs { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; padding: 110px 0; }
+    .specs > header { grid-column: 1 / -1; margin-bottom: 20px; }
+    .specs h2 { margin: 0; font-size: clamp(38px, 6vw, 72px); letter-spacing: -.06em; }
+    .card { min-height: 210px; padding: 28px; border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(145deg, #171719, #0d0d0f); }
+    .card.big { grid-column: span 6; min-height: 300px; }
+    .card.small { grid-column: span 3; }
+    .card.wide { grid-column: span 4; }
+    .card .value { display: block; margin-bottom: 12px; font-size: clamp(42px, 6vw, 78px); font-weight: 750; line-height: 1; letter-spacing: -.065em; }
+    .card h3 { margin: 0 0 8px; font-size: 23px; letter-spacing: -.035em; }
+    .card p { margin: 0; color: var(--muted); }
+    .chip { display: grid; place-items: center; color: #fff; background: radial-gradient(circle at 35% 25%, #74747c, #111 55%); }
+    .chip .value { margin: 0; font-size: clamp(72px, 10vw, 145px); }
+    .closing { padding: 80px 0 130px; border-top: 1px solid var(--line); }
+    .closing p { max-width: 900px; margin: 0; font-size: clamp(38px, 6vw, 78px); font-weight: 700; line-height: 1.05; letter-spacing: -.06em; }
+    .closing span { color: var(--green); }
+    footer { display: flex; justify-content: space-between; gap: 20px; padding: 24px 0 40px; color: #6e6e73; border-top: 1px solid var(--line); font-size: 13px; }
+    @media (max-width: 820px) {
+      main, footer { width: min(100% - 24px, 680px); }
+      .hero { grid-template-columns: 1fr; min-height: auto; padding: 48px 0 70px; }
+      .product-shot { order: -1; }
+      .product-shot img { max-height: 370px; }
+      .card.big, .card.small, .card.wide { grid-column: span 6; }
+    }
+    @media (max-width: 540px) {
+      nav { padding: 18px 0; }
+      .hero { gap: 25px; padding-top: 24px; }
+      h1 { font-size: clamp(50px, 16vw, 76px); }
+      .status-head { display: block; }
+      .status strong { display: block; margin-top: 8px; }
+      .stages span:nth-child(3), .stages span:nth-child(4) { display: none; }
+      .specs { padding: 80px 0; }
+      .card.big, .card.small, .card.wide { grid-column: 1 / -1; }
+      footer { display: block; }
     }
   </style>
 </head>
 <body>
   <main>
-    <h1>맥북 언제 와???</h1>
-    <p>누구나 확인할 수 있는 내 MacBook 배송 현황 📦</p>
-
-    <section class="box">
-      <h2>처음 한 번만 준비</h2>
-      <ol class="steps">
-        <li><strong> 주문 결과 가져오기</strong>를 북마크바로 드래그합니다.</li>
-        <li><strong>Apple 주문 조회 열기</strong>에서 주문 조회를 완료합니다.</li>
-        <li>결과 화면에서 북마크바의 <strong> 주문 결과 가져오기</strong>를 누릅니다.</li>
-      </ol>
-      <div class="actions">
-        <a id="bookmarklet" class="button" href="#"> 주문 결과 가져오기</a>
-        <a class="button secondary" href="https://secure.store.apple.com/kr/shop/order/list" target="_blank" rel="noopener noreferrer">Apple 주문 조회 열기 ↗</a>
+    <nav aria-label="페이지 정보"><span class="logo" aria-label="Apple"></span><span class="nav-note">MacBook Pro 14 · Silver</span></nav>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Incoming · September 2026</p>
+        <h1>아직 안 왔는데<br><span>벌써 자랑 중.</span></h1>
+        <p class="intro">나노 텍스처 디스플레이, 24GB 메모리, 1TB SSD. 그리고 M5. 굳이 필요했냐고? 그런 질문은 받지 않습니다.</p>
       </div>
-      <p class="warning">공개 화면에는 주문번호·수령인·청구 정보를 저장하지 않습니다.</p>
+      <figure class="product-shot">
+        <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp14-silver-select-202410?wid=2000&amp;hei=2000&amp;fmt=jpeg&amp;qlt=90&amp;.v=1728916305295" alt="실버 14형 MacBook Pro" width="900" height="700">
+        <figcaption class="finish">Silver · 14-inch</figcaption>
+      </figure>
     </section>
-
-    <section id="error" class="box error" hidden></section>
-    <section id="empty" class="box"><strong>아직 가져온 주문이 없습니다.</strong></section>
-
-    <article id="order" class="box" hidden>
-      <div class="headline">
-        <div><small id="number"></small><h2 id="product"></h2></div>
-        <span id="status" class="badge"></span>
-      </div>
-      <div class="meter" role="progressbar" aria-label="배송 진행률" aria-valuemin="0" aria-valuemax="100"><div id="bar"></div></div>
-      <div class="summary">
-        <div><small>진행률(대충)</small><strong id="progress"></strong></div>
-        <div><small>현재 상태</small><strong id="state"></strong></div>
-        <div><small>언제 와</small><strong id="arrival"></strong></div>
-      </div>
-      <details open>
-        <summary>하드웨어 사양</summary>
-        <ul id="details"></ul>
-      </details>
-    </article>
+    <section class="status" aria-label="배송 현황">
+      <div class="status-head"><div><p class="eyebrow">현재 배송 현황</p><h2>Apple이 열심히 처리하는 중</h2></div><strong>09.18 — 09.29 도착 예정</strong></div>
+      <div class="track" role="progressbar" aria-label="배송 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="30"><span></span></div>
+      <div class="stages"><span>주문 접수</span><span class="active">처리 중</span><span>출고 준비</span><span>출고</span><span>배송 완료</span></div>
+    </section>
+    <section class="specs">
+      <header><p class="eyebrow">The configuration</p><h2>작지만 전혀<br>소박하지 않음.</h2></header>
+      <article class="card big chip"><div><span class="value">M5</span><p>10-core CPU · 10-core GPU · 16-core Neural Engine</p></div></article>
+      <article class="card small"><span class="value">24GB</span><h3>통합 메모리</h3><p>탭을 몇 개 열었는지는 묻지 않기로.</p></article>
+      <article class="card small"><span class="value">1TB</span><h3>SSD 저장 장치</h3><p>일단 넉넉하다. 일단은.</p></article>
+      <article class="card wide"><h3>14-inch Liquid Retina XDR</h3><p>Nano-texture display. 반사는 줄이고 자랑은 선명하게.</p></article>
+      <article class="card wide"><h3>포트도 제대로</h3><p>Thunderbolt 4 × 3 · HDMI · SDXC · MagSafe 3 · 헤드폰 잭</p></article>
+      <article class="card wide"><h3>한국어 Magic Keyboard</h3><p>Touch ID · Force Touch Trackpad · 70W USB‑C 전원 어댑터</p></article>
+    </section>
+    <section class="closing"><p>택배가 도착하면<br>이 페이지보다 <span>제가 더 신납니다.</span></p></section>
   </main>
-
-  <script>
-    const target = "http://apple.lakekim.com/";
-    const bookmarklet = `javascript:(()=>{const s=()=>{const d={source:location.href,text:document.body.innerText};location.href='${target}#'+encodeURIComponent(JSON.stringify(d))},e=[...document.querySelectorAll('button,a')].find(x=>/구성 상세 정보 표시|Show configuration details/i.test(x.innerText));if(e){e.click();setTimeout(s,800)}else{s()}})()`;
-    const labels = [["배송 완료",100],["픽업 준비 완료",100],["배송 중",85],["출고됨",75],["출고 준비 중",55],["주문 처리 중",30],["처리 중",30],["주문 접수",10]];
-    const publicOrder = {
-      product: "14형 MacBook Pro(M5 탑재)",
-      status: "처리 중",
-      arrival: "도착 2026/09/18 - 2026/09/29",
-      progress: 30,
-      lines: [
-        "Force Touch Trackpad",
-        "Three Thunderbolt 4 ports, HDMI port, SDXC card slot, headphone jack, MagSafe 3",
-        "14-inch Liquid Retina XDR display",
-        "액세서리 키트",
-        "Nano-texture display",
-        "1TB SSD storage",
-        "Backlit Magic Keyboard with Touch ID - Korean - KOR",
-        "70W USB-C Power Adapter",
-        "24GB unified memory",
-        "Touch ID",
-        "Apple M5 chip with 10-core CPU, 10-core GPU, and 16-core Neural Engine"
-      ]
-    };
-    const $ = id => document.getElementById(id);
-
-    $("bookmarklet").href = bookmarklet;
-    $("bookmarklet").onclick = event => {
-      event.preventDefault();
-      alert("클릭 말고 북마크바로 드래그하세요!");
-    };
-
-    function parse(payload) {
-      const host = new URL(payload.source).hostname.toLowerCase();
-      if (host !== "apple.com" && !host.endsWith(".apple.com")) throw new Error("Apple 주문 페이지에서 실행한 결과만 가져올 수 있습니다.");
-      if (!payload.text || !/주문|배송|픽업|Order/.test(payload.text)) throw new Error("주문 결과를 찾지 못했습니다.");
-      const ignored = new Set(["Apple","스토어","Mac","iPad","iPhone","Watch","Vision","AirPods","TV 및 홈","엔터테인먼트","액세서리","고객지원"]);
-      const lines = [...new Set(payload.text.split(/\n+/).map(line => line.replace(/\s+/g," ").trim()).filter(line => line && !ignored.has(line)))];
-      const find = words => lines.find(line => words.some(word => line.includes(word)));
-      const status = find(labels.map(([label]) => label)) || "상태 확인됨";
-      const progress = labels.find(([label]) => status.includes(label))?.[1] || 50;
-      return {
-        number: payload.text.toUpperCase().match(/\b(?:W\d{9,11}|WR\d+|J\d+|\d{10}|[A-Z]{3}\d{7}|EF[A-Z0-9]{10})\b/)?.[0] || "화면에서 확인",
-        product: find(["MacBook","iPhone","iPad","Apple Watch","AirPods","Mac mini","Mac Studio"]) || "Apple 주문 제품",
-        arrival: find(["도착","배송 예정","수령 예정","배송일"]) || "Apple 주문 페이지에서 확인",
-        status, progress, lines
-      };
-    }
-
-    function render(order) {
-      if (!order) return;
-      const hardware = order.lines.findIndex(line => /^하드웨어\s*:?\s*$/.test(line));
-      const specifications = hardware >= 0 ? order.lines.slice(hardware + 1) : order.lines;
-      $("empty").hidden = true;
-      $("order").hidden = false;
-      $("number").textContent = order.number ? `주문 ${order.number}` : "공개 배송 현황";
-      $("product").textContent = order.product;
-      $("status").textContent = $("state").textContent = order.status;
-      $("arrival").textContent = order.arrival;
-      $("progress").textContent = `${order.progress}%`;
-      $("bar").style.width = `${order.progress}%`;
-      $("bar").parentElement.setAttribute("aria-valuenow", order.progress);
-      $("details").replaceChildren(...specifications.map(line => Object.assign(document.createElement("li"), {textContent: line})));
-    }
-
-    try {
-      let order;
-      if (location.hash.length > 1) {
-        order = parse(JSON.parse(decodeURIComponent(location.hash.slice(1))));
-        localStorage.setItem("apple-order", JSON.stringify(order));
-        history.replaceState(null, "", location.pathname);
-      } else {
-        order = publicOrder;
-      }
-      render(order);
-    } catch (error) {
-      $("error").hidden = false;
-      $("error").textContent = `가져오기 실패: ${error.message}`;
-      history.replaceState(null, "", location.pathname);
-    }
-  </script>
+  <footer><span>14형 MacBook Pro · M5 · Silver</span><span>Made while waiting for delivery.</span></footer>
 </body>
 </html>
