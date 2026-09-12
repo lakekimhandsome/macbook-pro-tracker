@@ -28,7 +28,7 @@
     .status strong { color: var(--green); white-space: nowrap; }
     .track { height: 7px; margin: 25px 0 14px; overflow: hidden; border-radius: 10px; background: #303034; }
     .track span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--green); box-shadow: 0 0 20px rgba(48,209,88,.55); }
-    .time-percent { margin: 20px 0 0; color: var(--green); font-size: clamp(22px, 5vw, 64px); font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .time-percent { margin: 20px 0 0; color: var(--green); font-size: clamp(36px, 7vw, 72px); font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
     .time-details { display: flex; flex-wrap: wrap; gap: 12px 32px; margin-top: 24px; font-variant-numeric: tabular-nums; }
     .time-details p { margin: 0; }
     .time-details small { display: block; color: var(--muted); font-size: 14px; margin-bottom: 4px; }
@@ -131,8 +131,8 @@
     function updateTime() {
       const now = Date.now();
       const state = timeProgress(now);
-      percent.textContent = `${state.percent.toFixed(10)}%`;
-      track.setAttribute("aria-valuenow", state.percent.toFixed(10));
+      percent.textContent = `${state.percent.toFixed(5)}%`;
+      track.setAttribute("aria-valuenow", state.percent.toFixed(5));
       fill.style.width = `${state.percent}%`;
       remaining.textContent = duration(Math.ceil(state.remaining / 1000));
       elapsed.textContent = duration(Math.floor(state.elapsed / 1000));
