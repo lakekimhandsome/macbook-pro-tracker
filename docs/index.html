@@ -85,15 +85,15 @@
       </figure>
     </section>
     <section class="status" aria-label="목표일까지 시간 진행률">
-      <div class="status-head"><div><p class="eyebrow">Countdown to September 18</p><h2 id="countdown-title">기다림도 소수점까지.</h2></div><strong>목표일 2026.09.18</strong></div>
+      <div class="status-head"><div><p class="eyebrow">Countdown to September 18, 18:00 KST</p><h2 id="countdown-title">기다림도 소수점까지.</h2></div><strong>목표 시각 2026.09.18 18:00</strong></div>
       <p class="time-percent" id="time-percent">—%</p>
       <div class="track" id="time-track" role="progressbar" aria-label="목표일까지 시간 진행률" aria-valuemin="0" aria-valuemax="100"><span id="time-fill"></span></div>
-      <div class="stages"><span>08.31 시작</span><span>09.18 목표</span></div>
+      <div class="stages"><span>08.31 시작</span><span>09.18 18:00 목표</span></div>
       <div class="time-details">
         <p><small>남은 시간</small><span id="time-remaining">계산 중…</span></p>
         <p><small>지나간 시간</small><span id="time-elapsed">계산 중…</span></p>
       </div>
-      <p class="time-note">한국 시간 2026.08.31 00:00 → 09.18 00:00 · 총 18일<br>시간 경과 기준이며 실제 배송 상태를 나타내지는 않습니다.</p>
+      <p class="time-note">한국 시간 2026.08.31 00:00 → 09.18 18:00 · 총 18일 18시간<br>시간 경과 기준이며 실제 배송 상태를 나타내지는 않습니다.</p>
       <noscript>실시간 진행률을 보려면 JavaScript를 켜 주세요.</noscript>
     </section>
     <section class="specs">
@@ -110,7 +110,7 @@
   <footer><span>14형 MacBook Pro · M5 · Silver</span><span>Made while waiting for delivery.</span></footer>
   <script>
     const startTime = Date.parse("2026-08-31T00:00:00+09:00");
-    const targetTime = Date.parse("2026-09-18T00:00:00+09:00");
+    const targetTime = Date.parse("2026-09-18T18:00:00+09:00");
     function timeProgress(now) {
       const elapsed = Math.max(0, Math.min(now - startTime, targetTime - startTime));
       return { percent: elapsed / (targetTime - startTime) * 100,
