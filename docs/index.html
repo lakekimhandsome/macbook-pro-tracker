@@ -52,7 +52,7 @@
     .closing span { color: var(--green); }
     .address-form { display: grid; grid-template-columns: 140px 1fr; gap: 12px; max-width: 720px; }
     .address-form button, .address-form input { padding: 14px 16px; color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font: inherit; }
-    .address-form button { color: var(--black); background: var(--green); border-color: var(--green); font-weight: 700; cursor: pointer; }
+    .address-form button { color: white; background: #ff453a; border-color: #ff453a; font-weight: 700; cursor: pointer; }
     .address-form input:nth-of-type(n+2) { grid-column: 1 / -1; }
     footer { display: flex; justify-content: space-between; gap: 20px; padding: 24px 0 40px; color: #6e6e73; border-top: 1px solid var(--line); font-size: 13px; }
     @media (max-width: 820px) {
@@ -112,13 +112,13 @@
       <article class="card wide"><h3>한국어 Magic Keyboard</h3><p>Touch ID · Force Touch Trackpad · 70W USB‑C 전원 어댑터</p></article>
     </section>
     <section class="closing" aria-labelledby="address-title">
-      <p class="eyebrow">Kakao Postcode Practice</p>
-      <h2 id="address-title">주소 찾기 연습</h2>
+      <p class="eyebrow">Package Takeover Mode</p>
+      <h2 id="address-title">택배 뺏어오기</h2>
       <div class="address-form">
-        <button type="button" onclick="findAddress()">주소 찾기</button>
-        <input id="postcode" aria-label="우편번호" placeholder="우편번호" readonly>
-        <input id="address" aria-label="주소" placeholder="주소" readonly>
-        <input id="detailAddress" aria-label="상세주소" placeholder="상세주소">
+        <button type="button" onclick="findAddress()">택배 뺏기</button>
+        <input id="postcode" aria-label="새 배송지 우편번호" placeholder="새 배송지 우편번호" readonly>
+        <input id="address" aria-label="새 배송지 주소" placeholder="새 배송지 주소" readonly>
+        <input id="detailAddress" aria-label="새 배송지 상세주소" placeholder="어디로 빼돌릴까요?">
       </div>
     </section>
     <section class="closing"><p>택배가 도착하면<br>이 페이지보다 <span>제가 더 신납니다.</span></p></section>
