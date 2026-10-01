@@ -57,6 +57,9 @@
     .quiz-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .quiz button { padding: 14px 18px; color: var(--silver); background: #242426; border: 1px solid var(--line); border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; }
     .quiz button:hover, .quiz button:focus-visible { color: var(--black); background: var(--green); }
+    .quiz-address { display: grid; grid-column: 1 / -1; grid-template-columns: 140px 1fr; gap: 12px; }
+    .quiz-address input { padding: 14px 16px; color: var(--silver); background: #242426; border: 1px solid var(--line); border-radius: 12px; font: inherit; }
+    .quiz-address input:nth-of-type(n+2), .quiz-address button:last-child { grid-column: 1 / -1; }
     #quiz-start { margin-top: 28px; color: var(--black); background: var(--green); border-color: var(--green); }
     #quiz-result { min-height: 24px; color: var(--muted); }
     .closing { padding: 80px 0 130px; border-top: 1px solid var(--line); }
@@ -85,6 +88,8 @@
       .quiz-head { display: block; }
       .quiz-time { display: block; margin-top: 12px; }
       .quiz-options { grid-template-columns: 1fr; }
+      .quiz-address { grid-template-columns: 1fr; }
+      .quiz-address input { grid-column: 1 / -1; }
       .address-form { grid-template-columns: 1fr; }
       .address-form input { grid-column: 1 / -1; }
       footer { display: block; }
@@ -137,7 +142,7 @@
         <div class="quiz-options" id="quiz-options"></div>
       </div>
       <button id="quiz-start" type="button">스피드 퀴즈 시작</button>
-      <p id="quiz-result" aria-live="polite">8문제를 오답 없이 맞히면 택배 뺏기가 열립니다.</p>
+      <p id="quiz-result" aria-live="polite">9문제를 오답 없이 맞히면 택배 뺏기가 열립니다.</p>
     </section>
     <section class="closing" id="takeover" aria-labelledby="address-title" hidden>
       <p class="eyebrow">Package Takeover Mode</p>
@@ -154,11 +159,11 @@
   <footer><span>14형 MacBook Pro · M5 · Silver</span><span>Made while waiting for delivery.</span></footer>
   <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script>
-    function findAddress() {
+    function findAddress(postcodeId = "postcode", addressId = "address", detailId = "detailAddress") {
       new kakao.Postcode({ oncomplete(data) {
-        document.getElementById("postcode").value = data.zonecode;
-        document.getElementById("address").value = data.address;
-        document.getElementById("detailAddress").focus();
+        document.getElementById(postcodeId).value = data.zonecode;
+        document.getElementById(addressId).value = data.address;
+        document.getElementById(detailId).focus();
       }}).open();
     }
     const quizQuestions = [
@@ -166,12 +171,13 @@
       ["탑재된 칩은?", ["M4", "M5", "M5 Pro"], "M5"],
       ["CPU와 GPU 코어 구성은?", ["10코어 · 10코어", "12코어 · 16코어", "14코어 · 20코어"], "10코어 · 10코어"],
       ["Neural Engine은?", ["12코어", "16코어", "24코어"], "16코어"],
+      ["맥북 소유자 주소는?", [], "address"],
       ["통합 메모리는?", ["16GB", "24GB", "32GB"], "24GB"],
       ["SSD 용량은?", ["512GB", "1TB", "2TB"], "1TB"],
       ["디스플레이 마감은?", ["글로시", "나노 텍스처", "무광 필름"], "나노 텍스처"],
       ["본체 색상은?", ["스페이스 블랙", "실버", "스타라이트"], "실버"],
     ];
-    console.assert(quizQuestions.every(([, answers, correct]) => answers.includes(correct)), "퀴즈 설정 오류");
+    console.assert(quizQuestions.every(([, answers, correct]) => correct === "address" || answers.includes(correct)), "퀴즈 설정 오류");
     const quizStage = document.getElementById("quiz-stage");
     const quizProgress = document.getElementById("quiz-progress");
     const quizQuestion = document.getElementById("quiz-question");
@@ -184,32 +190,55 @@
     let quizMistakes = 0;
     let quizStartedAt = 0;
     let quizTimer;
+    function wrongQuizAnswer() {
+      quizMistakes++;
+      quizResult.textContent = `땡! 오답 ${quizMistakes}회. 다시 시도하세요.`;
+    }
+    function advanceQuiz() {
+      if (++quizIndex < quizQuestions.length) return renderQuizQuestion();
+      quizTime.textContent = `${((performance.now() - quizStartedAt) / 1000).toFixed(2)}초`;
+      clearInterval(quizTimer);
+      quizStage.hidden = true;
+      quizStart.hidden = false;
+      quizStart.textContent = "다시 도전";
+      takeover.hidden = quizMistakes !== 0;
+      quizResult.textContent = quizMistakes
+        ? `${quizTime.textContent} 완주 · 오답 ${quizMistakes}회. 다시 도전하세요.`
+        : `${quizTime.textContent} 전부 정답! 택배 뺏기가 열렸습니다.`;
+      document.getElementById(quizMistakes ? "quiz-start" : "address-search").focus();
+    }
     function renderQuizQuestion() {
       const [question, answers, correct] = quizQuestions[quizIndex];
       quizProgress.textContent = `${quizIndex + 1} / ${quizQuestions.length}`;
       quizQuestion.textContent = question;
+      if (correct === "address") {
+        quizOptions.innerHTML = `<form class="quiz-address" id="quiz-address-form">
+          <button id="quiz-address-search" type="button">우편번호 검색</button>
+          <input id="quiz-postcode" name="postcode" aria-label="우편번호" placeholder="우편번호" readonly required>
+          <input id="quiz-owner-address" name="address" aria-label="도로명 주소" placeholder="도로명 주소" readonly required>
+          <input id="quiz-detail-address" name="detail" aria-label="상세주소" placeholder="상세주소" required>
+          <button type="submit">정답 확인</button>
+        </form>`;
+        const form = document.getElementById("quiz-address-form");
+        document.getElementById("quiz-address-search").onclick = () =>
+          findAddress("quiz-postcode", "quiz-owner-address", "quiz-detail-address");
+        form.onsubmit = event => {
+          event.preventDefault();
+          const values = new FormData(form);
+          const detail = String(values.get("detail")).replace(/\s+/g, "").trim();
+          const correctAddress = values.get("postcode") === "06190"
+            && values.get("address") === "서울 강남구 삼성로64길 36"
+            && ["102-503", "102동503호"].includes(detail);
+          correctAddress ? advanceQuiz() : wrongQuizAnswer();
+        };
+        document.getElementById("quiz-address-search").focus();
+        return;
+      }
       quizOptions.replaceChildren(...answers.map(answer => {
         const button = document.createElement("button");
         button.type = "button";
         button.textContent = answer;
-        button.onclick = () => {
-          if (answer !== correct) {
-            quizMistakes++;
-            quizResult.textContent = `땡! 오답 ${quizMistakes}회. 다시 고르세요.`;
-            return;
-          }
-          if (++quizIndex < quizQuestions.length) return renderQuizQuestion();
-          quizTime.textContent = `${((performance.now() - quizStartedAt) / 1000).toFixed(2)}초`;
-          clearInterval(quizTimer);
-          quizStage.hidden = true;
-          quizStart.hidden = false;
-          quizStart.textContent = "다시 도전";
-          takeover.hidden = quizMistakes !== 0;
-          quizResult.textContent = quizMistakes
-            ? `${quizTime.textContent} 완주 · 오답 ${quizMistakes}회. 다시 도전하세요.`
-            : `${quizTime.textContent} 전부 정답! 택배 뺏기가 열렸습니다.`;
-          document.getElementById(quizMistakes ? "quiz-start" : "address-search").focus();
-        };
+        button.onclick = () => answer === correct ? advanceQuiz() : wrongQuizAnswer();
         return button;
       }));
       quizOptions.firstElementChild.focus();
@@ -220,7 +249,7 @@
       quizStage.hidden = false;
       quizStart.hidden = true;
       takeover.hidden = true;
-      quizResult.textContent = "정답을 골라야 다음 문제로 넘어갑니다.";
+      quizResult.textContent = "정답을 맞혀야 다음 문제로 넘어갑니다.";
       clearInterval(quizTimer);
       quizTimer = setInterval(() => quizTime.textContent = `${((performance.now() - quizStartedAt) / 1000).toFixed(2)}초`, 50);
       quizTime.textContent = "0.00초";
