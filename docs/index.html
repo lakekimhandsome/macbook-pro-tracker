@@ -166,6 +166,13 @@
         document.getElementById(detailId).focus();
       }}).open();
     }
+    function hashAnswer(value) {
+      let hash = 2166136261;
+      for (let index = 0; index < value.length; index++)
+        hash = Math.imul(hash ^ value.charCodeAt(index), 16777619);
+      return (hash >>> 0).toString(16).padStart(8, "0");
+    }
+    const ownerAddressHashes = ["1d4ff292", "33f6e622"];
     const quizQuestions = [
       ["화면 크기는?", ["13형", "14형", "16형"], "14형"],
       ["탑재된 칩은?", ["M4", "M5", "M5 Pro"], "M5"],
@@ -177,6 +184,7 @@
       ["디스플레이 마감은?", ["글로시", "나노 텍스처", "무광 필름"], "나노 텍스처"],
       ["본체 색상은?", ["스페이스 블랙", "실버", "스타라이트"], "실버"],
     ];
+    console.assert(hashAnswer("test") === "afd071e5", "해시 설정 오류");
     console.assert(quizQuestions.every(([, answers, correct]) => correct === "address" || answers.includes(correct)), "퀴즈 설정 오류");
     const quizStage = document.getElementById("quiz-stage");
     const quizProgress = document.getElementById("quiz-progress");
@@ -225,10 +233,12 @@
         form.onsubmit = event => {
           event.preventDefault();
           const values = new FormData(form);
-          const detail = String(values.get("detail")).replace(/\s+/g, "").trim();
-          const correctAddress = values.get("postcode") === "06190"
-            && values.get("address") === "서울 강남구 삼성로64길 36"
-            && ["102-503", "102동503호"].includes(detail);
+          const answer = [
+            String(values.get("postcode")).trim(),
+            String(values.get("address")).replace(/\s+/g, " ").trim(),
+            String(values.get("detail")).replace(/\s+/g, "").trim(),
+          ].join("|");
+          const correctAddress = ownerAddressHashes.includes(hashAnswer(answer));
           correctAddress ? advanceQuiz() : wrongQuizAnswer();
         };
         document.getElementById("quiz-address-search").focus();
