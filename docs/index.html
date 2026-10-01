@@ -137,13 +137,13 @@
         <div class="quiz-options" id="quiz-options"></div>
       </div>
       <button id="quiz-start" type="button">스피드 퀴즈 시작</button>
-      <p id="quiz-result" aria-live="polite">8문제를 정확히 맞혀 보세요.</p>
+      <p id="quiz-result" aria-live="polite">8문제를 오답 없이 맞히면 택배 뺏기가 열립니다.</p>
     </section>
-    <section class="closing" aria-labelledby="address-title">
+    <section class="closing" id="takeover" aria-labelledby="address-title" hidden>
       <p class="eyebrow">Package Takeover Mode</p>
       <h2 id="address-title">택배 뺏어오기</h2>
       <div class="address-form">
-        <button type="button" onclick="findAddress()">우편번호 검색</button>
+        <button id="address-search" type="button" onclick="findAddress()">우편번호 검색</button>
         <input id="postcode" aria-label="새 배송지 우편번호" placeholder="새 배송지 우편번호" readonly>
         <input id="address" aria-label="새 배송지 주소" placeholder="새 배송지 주소" readonly>
         <input id="detailAddress" aria-label="새 배송지 상세주소" placeholder="어디로 빼돌릴까요?">
@@ -179,6 +179,7 @@
     const quizStart = document.getElementById("quiz-start");
     const quizResult = document.getElementById("quiz-result");
     const quizTime = document.getElementById("quiz-time");
+    const takeover = document.getElementById("takeover");
     let quizIndex = 0;
     let quizMistakes = 0;
     let quizStartedAt = 0;
@@ -203,8 +204,11 @@
           quizStage.hidden = true;
           quizStart.hidden = false;
           quizStart.textContent = "다시 도전";
-          quizResult.textContent = `${quizTime.textContent} 완주 · 오답 ${quizMistakes}회`;
-          quizStart.focus();
+          takeover.hidden = quizMistakes !== 0;
+          quizResult.textContent = quizMistakes
+            ? `${quizTime.textContent} 완주 · 오답 ${quizMistakes}회. 다시 도전하세요.`
+            : `${quizTime.textContent} 전부 정답! 택배 뺏기가 열렸습니다.`;
+          document.getElementById(quizMistakes ? "quiz-start" : "address-search").focus();
         };
         return button;
       }));
@@ -215,6 +219,7 @@
       quizStartedAt = performance.now();
       quizStage.hidden = false;
       quizStart.hidden = true;
+      takeover.hidden = true;
       quizResult.textContent = "정답을 골라야 다음 문제로 넘어갑니다.";
       clearInterval(quizTimer);
       quizTimer = setInterval(() => quizTime.textContent = `${((performance.now() - quizStartedAt) / 1000).toFixed(2)}초`, 50);
